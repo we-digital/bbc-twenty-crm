@@ -1,4 +1,4 @@
-name: Test Dev Branch
+name: Deploy Twenty CRM to DO
 
 on:
   push:
@@ -6,13 +6,28 @@ on:
       - dev
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DO_SSH_KEY_BASE64 }}" | base64 --decode > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.DO_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H ${{ secrets.DO_SERVER_IP }} >> ~/.ssh/known_hosts
+
       - name: Check SSH connection
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} "whoami && pwd"
+        run: ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} "whoami && pwd"
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            cd ~/twenty
+            git pull origin dev
+            docker-compose -f docker-compose.prod.yml up -d --build
+          EOF
