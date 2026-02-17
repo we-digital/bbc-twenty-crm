@@ -55,6 +55,13 @@ services:
       retries: 20
     restart: always
 
+  widgets:
+    image: twentycrm/twenty:${TAG:-latest}
+    command: ["serve", "-s", "/app/packages/twenty-widgets/build", "-l", "4175"]
+    ports:
+      - "4175:4175"
+    restart: always
+
   worker:
     image: twentycrm/twenty:${TAG:-latest}
     volumes:

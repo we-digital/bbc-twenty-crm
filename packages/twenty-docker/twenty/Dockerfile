@@ -15,6 +15,7 @@ COPY ./packages/twenty-ui/package.json /app/packages/twenty-ui/
 COPY ./packages/twenty-shared/package.json /app/packages/twenty-shared/
 COPY ./packages/twenty-front/package.json /app/packages/twenty-front/
 COPY ./packages/twenty-sdk/package.json /app/packages/twenty-sdk/
+COPY ./packages/twenty-widgets/package.json /app/packages/twenty-widgets/
 
 # Install all dependencies
 RUN yarn && yarn cache clean && npx nx reset
@@ -43,6 +44,13 @@ COPY ./packages/twenty-shared /app/packages/twenty-shared
 COPY ./packages/twenty-sdk /app/packages/twenty-sdk
 RUN npx nx build twenty-front
 
+# Build widgets
+FROM common-deps AS twenty-widgets-build
+
+COPY ./packages/twenty-shared /app/packages/twenty-shared
+COPY ./packages/twenty-widgets /app/packages/twenty-widgets
+
+RUN npx nx run twenty-widgets:build
 
 # Final stage: Run the application
 FROM node:24-alpine AS twenty
@@ -50,7 +58,7 @@ FROM node:24-alpine AS twenty
 # Used to run healthcheck in docker
 RUN apk add --no-cache curl jq
 
-RUN npm install -g tsx
+RUN npm install -g tsx serve
 
 RUN apk add --no-cache postgresql-client
 
@@ -68,6 +76,7 @@ ENV APP_VERSION=$APP_VERSION
 COPY --chown=1000 --from=twenty-server-build /app /app
 COPY --chown=1000 --from=twenty-server-build /app/packages/twenty-server /app/packages/twenty-server
 COPY --chown=1000 --from=twenty-front-build /app/packages/twenty-front/build /app/packages/twenty-server/dist/front
+COPY --chown=1000 --from=twenty-widgets-build /app/packages/twenty-widgets/build /app/packages/twenty-widgets/build
 
 # Set metadata and labels
 LABEL org.opencontainers.image.source=https://github.com/twentyhq/twenty
