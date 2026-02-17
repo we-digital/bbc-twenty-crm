@@ -225,6 +225,7 @@
       "packages/twenty-docs",
       "packages/twenty-e2e-testing",
       "packages/twenty-shared",
+      "packages/twenty-widgets",
       "packages/twenty-sdk",
       "packages/twenty-apps",
       "packages/twenty-cli",
