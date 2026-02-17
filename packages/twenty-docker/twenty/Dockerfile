@@ -42,7 +42,7 @@ COPY ./packages/twenty-front /app/packages/twenty-front
 COPY ./packages/twenty-ui /app/packages/twenty-ui
 COPY ./packages/twenty-shared /app/packages/twenty-shared
 COPY ./packages/twenty-sdk /app/packages/twenty-sdk
-RUN npx nx build twenty-front
+RUN npx nx run twenty-front:lingui:compile && npx nx build twenty-front
 
 # Build widgets
 FROM common-deps AS twenty-widgets-build
