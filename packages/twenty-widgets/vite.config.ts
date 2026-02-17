@@ -6,7 +6,8 @@ export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/packages/twenty-widgets',
   server: {
-    port: 4175
+    port: 4175,
+    host: true
   },
   build: {
     outDir: 'build'
