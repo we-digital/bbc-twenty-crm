@@ -51,6 +51,8 @@ COPY ./packages/twenty-ui /app/packages/twenty-ui
 COPY ./packages/twenty-shared /app/packages/twenty-shared
 COPY ./packages/twenty-sdk /app/packages/twenty-sdk
 
+RUN yarn install && yarn cache clean && npx nx reset
+
 # Build frontend inside Docker
 RUN npx nx run twenty-front:lingui:compile && npx nx build twenty-front
 
@@ -58,14 +60,14 @@ RUN npx nx run twenty-front:lingui:compile && npx nx build twenty-front
 # -----------------------------
 # Build the widgets
 # -----------------------------
-FROM common-deps AS twenty-widgets-build
+# FROM common-deps AS twenty-widgets-build
 
 # Copy source code
-COPY ./packages/twenty-shared /app/packages/twenty-shared
-COPY ./packages/twenty-widgets /app/packages/twenty-widgets
+# COPY ./packages/twenty-shared /app/packages/twenty-shared
+# COPY ./packages/twenty-widgets /app/packages/twenty-widgets
 
 # Build widgets inside Docker
-RUN npx nx run twenty-shared:build && npx nx run twenty-widgets:build
+# RUN npx nx run twenty-shared:build && npx nx run twenty-widgets:build
 
 
 # -----------------------------
