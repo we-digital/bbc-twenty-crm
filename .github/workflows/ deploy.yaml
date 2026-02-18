@@ -28,6 +28,11 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
             cd ~/bbc-twenty-crm
-            git pull origin dev
+            git fetch origin
+            git checkout dev
+            git reset --hard origin/dev
+            git clean -fd
+            git rev-parse --short HEAD
+            sed -n '36,53p' packages/twenty-docker/twenty/Dockerfile
             docker compose -f docker-compose.prod.yml up -d --build
           EOF
