@@ -44,7 +44,6 @@ COPY ./packages/twenty-shared /app/packages/twenty-shared
 COPY ./packages/twenty-sdk /app/packages/twenty-sdk
 RUN (npx nx run twenty-front:lingui:compile && npx nx build twenty-front) || (npx nx run twenty-front:lingui:compile && npx nx build twenty-front)
 
-Build widgets (now built outside Docker, stage kept commented for reference)
 FROM common-deps AS twenty-widgets-build
 
 COPY ./packages/twenty-shared /app/packages/twenty-shared
