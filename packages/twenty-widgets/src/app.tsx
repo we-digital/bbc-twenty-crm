@@ -32,7 +32,7 @@ const widgets: WidgetDefinition[] = [
   {
     id: 'pass-data-widget',
     name: 'Pass Data Widget',
-    description: 'Пример 2 для Twenty',
+    description: 'Виджет с паспортными данными',
     url: '/pass-data-widget/'
   }
 ];
