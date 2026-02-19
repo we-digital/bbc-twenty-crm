@@ -9,7 +9,7 @@ COPY ./.yarn/patches /app/.yarn/patches
 COPY ./packages/twenty-widgets/package.json /app/packages/twenty-widgets/
 COPY ./packages/twenty-shared/package.json /app/packages/twenty-shared/
 
-RUN yarn workspaces focus twenty-widgets && yarn cache clean && npx nx reset
+RUN yarn workspaces focus twenty-widgets && yarn cache clean
 
 FROM deps AS build
 
