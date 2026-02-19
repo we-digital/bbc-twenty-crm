@@ -32,7 +32,7 @@ const widgets: WidgetDefinition[] = [
   {
     id: 'example-widget-2',
     name: 'Example Widget',
-    description: 'Пример 2 микро для Twenty',
+    description: 'Пример 2 для Twenty',
     url: 'https://example.com'
   }
 ];
