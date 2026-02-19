@@ -218,8 +218,8 @@ services:
     ports:
       - "4175:4175"
     restart: always
-    profiles:
-      - widgets
+    # profiles:
+    #   - widgets
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4175"]
       interval: 10s
