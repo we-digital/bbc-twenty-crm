@@ -116,19 +116,15 @@ services:
 
   mrz-widget:
     image: ${WIDGETS_IMAGE}
-    volumes:
-      - ./packages/twenty-docker/twenty-widgets/nginx-mrz.conf:/etc/nginx/conf.d/default.conf:ro
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=twenty_traefik-public"
-      - "traefik.http.middlewares.mrz-strip.stripprefix.prefixes=/widget-mrz-input"
+      - "traefik.http.services.mrz-widget.loadbalancer.server.port=4175"
       - "traefik.http.routers.mrz-widget.rule=Host(`${SERVER_DOMAIN}`) && PathPrefix(`/widget-mrz-input`)"
       - "traefik.http.routers.mrz-widget.entrypoints=websecure"
       - "traefik.http.routers.mrz-widget.tls.certresolver=letsencrypt"
       - "traefik.http.routers.mrz-widget.service=mrz-widget"
-      - "traefik.http.routers.mrz-widget.middlewares=mrz-strip"
       - "traefik.http.routers.mrz-widget.priority=200"
-      - "traefik.http.services.mrz-widget.loadbalancer.server.port=4175"
     networks:
       - traefik-public
       - default

@@ -16,7 +16,7 @@ WORKDIR /widget
 
 COPY packages/twenty-widgets/submodules/widget-mrz-input ./
 
-RUN npm install && npm run build
+RUN pnpm install --frozen-lockfile && pnpm exec vite build --base /widget-mrz-input/
 
 FROM nginx:alpine AS runner
 
