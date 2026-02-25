@@ -75,8 +75,14 @@ jobs:
             git fetch origin dev
             git reset --hard origin/dev
             git submodule sync --recursive
-            git submodule update --init --recursive --remote
+            git submodule update --init --recursive --remote || true
             export WIDGETS_IMAGE="${{ needs.build-widgets.outputs.image }}"
             docker compose -f docker-compose.prod.yml pull widgets
             docker compose -f docker-compose.prod.yml up -d
           EOF
+
+      - name: Show server logs on failure
+        if: failure()
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} \
+            "docker logs twenty-server-1 --tail 100 2>&1 || echo 'Could not get server logs'"
