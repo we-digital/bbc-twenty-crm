@@ -2,9 +2,7 @@ name: twenty
 
 services:
   traefik:
-    image: traefik:v3.0
-    environment:
-      - DOCKER_API_VERSION=1.44
+    image: traefik:v3
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
