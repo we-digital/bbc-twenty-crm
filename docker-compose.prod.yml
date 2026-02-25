@@ -32,6 +32,7 @@ services:
       - "traefik.http.routers.server.rule=Host(`${SERVER_DOMAIN}`)"
       - "traefik.http.routers.server.entrypoints=websecure"
       - "traefik.http.routers.server.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.server.service=server"
       - "traefik.http.services.server.loadbalancer.server.port=3000"
     networks:
       - traefik-public
@@ -94,6 +95,7 @@ services:
       - "traefik.http.routers.widgets.rule=Host(`${SERVER_DOMAIN}`) && PathPrefix(`/widget-mrz-input`)"
       - "traefik.http.routers.widgets.entrypoints=websecure"
       - "traefik.http.routers.widgets.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.widgets.service=widgets"
       - "traefik.http.services.widgets.loadbalancer.server.port=4175"
     networks:
       - traefik-public
