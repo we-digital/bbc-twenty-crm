@@ -77,12 +77,17 @@ jobs:
             git submodule sync --recursive
             git submodule update --init --recursive --remote || true
             export WIDGETS_IMAGE="${{ needs.build-widgets.outputs.image }}"
-            docker compose -f docker-compose.prod.yml pull widgets
+            docker compose -f docker-compose.prod.yml pull widgets server
             docker compose -f docker-compose.prod.yml up -d
           EOF
 
       - name: Show server logs on failure
         if: failure()
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} \
-            "docker logs twenty-server-1 --tail 100 2>&1 || echo 'Could not get server logs'"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
+            docker logs twenty-server-1 --tail 100 2>&1 || echo 'Could not get server logs'
+            echo "--- front dir check ---"
+            docker exec twenty-server-1 ls /app/packages/twenty-server/dist/front 2>&1 || echo 'dist/front not found'
+            echo "--- root endpoint check ---"
+            docker exec twenty-server-1 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ 2>&1
+          EOF
