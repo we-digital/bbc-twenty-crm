@@ -27,7 +27,7 @@ const widgets: WidgetDefinition[] = [
     id: 'widget-mrz-input',
     name: 'MRZ Input Widget',
     description: 'Виджет с паспортными данными',
-    url: '/widget-mrz-input/'
+    url: '/wedigital/mrz-input/'
   }
 ];
 
