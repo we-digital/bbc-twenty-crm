@@ -3,7 +3,7 @@ name: Deploy Twenty CRM to DO
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build-widgets:
@@ -82,8 +82,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.DO_SSH_USER }}@${{ secrets.DO_SERVER_IP }} << 'EOF'
             cd ~/wedigital-twenty-crm
-            git fetch origin dev
-            git reset --hard origin/dev
+            git fetch origin main
+            git reset --hard origin/main
             git submodule sync --recursive
             git submodule update --init --recursive --remote || true
             export WIDGETS_IMAGE="${{ needs.build-widgets.outputs.image }}"
