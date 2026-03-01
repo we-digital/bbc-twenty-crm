@@ -5,7 +5,7 @@ import { PageLayoutWidgetNoDataDisplay } from '@/page-layout/widgets/components/
 import { WidgetSkeletonLoader } from '@/page-layout/widgets/components/WidgetSkeletonLoader';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { isDefined } from 'twenty-shared/utils';
 
@@ -57,6 +57,14 @@ export type IframeWidgetProps = {
   widget: PageLayoutWidget;
 };
 
+const getUrlOrigin = (url: string): string | null => {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+};
+
 export const IframeWidget = ({ widget }: IframeWidgetProps) => {
   const isPageLayoutInEditMode = useRecoilComponentValue(
     isPageLayoutInEditModeComponentState,
@@ -72,23 +80,25 @@ export const IframeWidget = ({ widget }: IframeWidgetProps) => {
 
   const url = configuration.url;
   const title = widget.title;
-  let resolvedUrl = url;
-
-  if (isDefined(resolvedUrl) && isDefined(currentUser?.id)) {
-    try {
-      const parsedUrl = new URL(resolvedUrl);
-      parsedUrl.searchParams.set('userId', currentUser?.id ?? '');
-      resolvedUrl = parsedUrl.toString();
-    } catch {
-      resolvedUrl = null;
-    }
-  }
+  const targetOrigin = isDefined(url) ? getUrlOrigin(url) : null;
 
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const handleIframeLoad = () => {
+  const handleIframeLoad = (event: SyntheticEvent<HTMLIFrameElement>) => {
     setIsLoading(false);
+
+    if (!isDefined(currentUser) || !isDefined(targetOrigin)) {
+      return;
+    }
+
+    event.currentTarget.contentWindow?.postMessage(
+      {
+        type: 'twenty:user-context',
+        payload: { userContext: currentUser },
+      },
+      targetOrigin,
+    );
   };
 
   const handleIframeError = () => {
@@ -96,7 +106,7 @@ export const IframeWidget = ({ widget }: IframeWidgetProps) => {
     setHasError(true);
   };
 
-  if (hasError || !isDefined(url)) {
+  if (hasError || !isDefined(url) || (isDefined(currentUser) && !targetOrigin)) {
     return (
       <StyledContainer $isEditMode={isPageLayoutInEditMode}>
         <StyledErrorContainer>
@@ -115,7 +125,7 @@ export const IframeWidget = ({ widget }: IframeWidgetProps) => {
       )}
       <StyledIframe
         $isEditMode={isPageLayoutInEditMode}
-        src={resolvedUrl}
+        src={url}
         title={title}
         onLoad={handleIframeLoad}
         onError={handleIframeError}
